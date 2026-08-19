@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://bp1uai2faj0at"]
+
+[ext_resource type="Texture2D" uid="uid://jo6u7j7wmbl5" path="res://biome_tiles.png" id="1_tlwt5"]
+[ext_resource type="Script" uid="uid://bpecex7mvvdgv" path="res://MapCamera.cs" id="2_fj7yv"]
+[ext_resource type="Script" uid="uid://b3xraf0dqra6f" path="res://TerrainGenerator.cs" id="2_tlwt5"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aqk2v"]
+texture = ExtResource("1_tlwt5")
+texture_region_size = Vector2i(128, 128)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+10:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_vdd6a"]
+tile_size = Vector2i(128, 128)
+sources/0 = SubResource("TileSetAtlasSource_aqk2v")
+
+[node name="World" type="Node2D" unique_id=1051817960]
+
+[node name="TerrainGenerator" type="TileMapLayer" parent="." unique_id=1026201501]
+tile_set = SubResource("TileSet_vdd6a")
+script = ExtResource("2_tlwt5")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2059742931]
+script = ExtResource("2_fj7yv")
