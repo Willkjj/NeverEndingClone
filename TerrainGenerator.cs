@@ -12,22 +12,22 @@ public partial class TerrainGenerator : Godot.TileMapLayer
         var tempNoise = new FastNoiseLite();
         tempNoise.NoiseType = FastNoiseLite.NoiseTypeEnum.Simplex;
         tempNoise.Frequency = 0.015f;
-        tempNoise.Seed = 1234;
+        tempNoise.Seed = 789431;
 
         var moistureNoise = new FastNoiseLite();
         moistureNoise.NoiseType = FastNoiseLite.NoiseTypeEnum.Simplex;
         moistureNoise.Frequency = 0.015f;
-        moistureNoise.Seed = 5678;
+        moistureNoise.Seed = 243188;
 
         var mountainNoise = new FastNoiseLite();
         mountainNoise.FractalType = FastNoiseLite.FractalTypeEnum.Ridged;
         mountainNoise.Frequency = 0.01f;
-        mountainNoise.Seed = 9999;
+        mountainNoise.Seed = 234452738;
 
         var landNoise = new FastNoiseLite();
         landNoise.NoiseType = FastNoiseLite.NoiseTypeEnum.Simplex;
         landNoise.Frequency = 0.01f;
-        landNoise.Seed = 4444;
+        landNoise.Seed = 54250807;
 
         float[,] temperatureMap = new float[width, height];
         float[,] moistureMap = new float[width, height];
