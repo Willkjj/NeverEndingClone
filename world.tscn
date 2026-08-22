@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bpecex7mvvdgv" path="res://MapCamera.cs" id="2_fj7yv"]
 [ext_resource type="Script" uid="uid://b3xraf0dqra6f" path="res://TerrainGenerator.cs" id="2_tlwt5"]
 [ext_resource type="Script" uid="uid://1i7cqkpb3af7" path="res://TileHighlight.cs" id="4_036b0"]
+[ext_resource type="Script" uid="uid://cdyyg17nxh1l7" path="res://TileInfoSidebar.cs" id="4_dwbse"]
 [ext_resource type="Script" uid="uid://cljftm8wjsax0" path="res://TileSelector.cs" id="5_dwbse"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aqk2v"]
@@ -35,6 +36,10 @@ script = ExtResource("2_tlwt5")
 script = ExtResource("2_fj7yv")
 
 [node name="TileInfoSidebar" type="CanvasLayer" parent="." unique_id=1633626784]
+script = ExtResource("4_dwbse")
+PanelPath = NodePath("PanelContainer")
+CoordsDisplayPath = NodePath("PanelContainer/VBoxContainer/TileCoords")
+BiomeDisplayPath = NodePath("PanelContainer/VBoxContainer/Biome")
 
 [node name="PanelContainer" type="PanelContainer" parent="TileInfoSidebar" unique_id=1882092998]
 custom_minimum_size = Vector2(250, 0)
@@ -48,9 +53,13 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="TileInfoSidebar/PanelContainer" unique_id=461584593]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="TileInfoSidebar/PanelContainer/VBoxContainer" unique_id=1730633185]
+[node name="TileCoords" type="Label" parent="TileInfoSidebar/PanelContainer/VBoxContainer" unique_id=1730633185]
 layout_mode = 2
 text = "Selected Tile: "
+
+[node name="Biome" type="Label" parent="TileInfoSidebar/PanelContainer/VBoxContainer" unique_id=877344238]
+layout_mode = 2
+text = "Biome: "
 
 [node name="SelectedTileHighlight" type="Node2D" parent="." unique_id=151764949]
 script = ExtResource("4_036b0")

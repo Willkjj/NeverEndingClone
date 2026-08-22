@@ -18,12 +18,14 @@ public partial class TileSelector : Node2D
     private TileHighlight _hoverHighlight;
     private TileHighlight _selectedHighlight;
     private Vector2I _lastHoverCell = new Vector2I(-1, -1);
+    private TileInfoSidebar _sidebar;
 
     public override void _Ready()
     {
         _terrain = GetNode<TileMapLayer>(TerrainGeneratorPath);
         _hoverHighlight = GetNode<TileHighlight>(HoverHighlightPath);
         _selectedHighlight = GetNode<TileHighlight>(SelectedHighlightPath);
+        _sidebar = GetNode<TileInfoSidebar>(SidebarPath);
 
         Vector2 tileSize = _terrain.TileSet.TileSize;
         _hoverHighlight.SetTileSize(tileSize);
@@ -46,6 +48,16 @@ public partial class TileSelector : Node2D
         )
         {
             SelectHoveredTile();
+        }
+    }
+
+    public override void _Process(double delta)
+    {
+        var camera = GetViewport().GetCamera2D();
+        if (camera != null)
+        {
+            _hoverHighlight.SetZoom(camera.Zoom.X);
+            _selectedHighlight.SetZoom(camera.Zoom.X);
         }
     }
 
@@ -88,6 +100,8 @@ public partial class TileSelector : Node2D
         _selectedHighlight.GlobalPosition = _terrain.ToGlobal((_terrain.MapToLocal(cell)));
 
         TileData tile = WorldState.Instance.Tiles[cell.X, cell.Y];
+
+        _sidebar.UpdateTileInfo(tile);
         //TODO - Update Sidebar Info
     }
 }

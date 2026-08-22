@@ -7,9 +7,10 @@ public partial class TileHighlight : Node2D
     public Color BorderColor = Colors.Yellow;
 
     [Export]
-    public int BorderSize = 2;
+    public float ScreenSpaceThickness = 2f;
 
     private Vector2 _tileSize;
+    private float _currentZoom = 1f;
 
     public void SetTileSize(Vector2 size)
     {
@@ -17,9 +18,16 @@ public partial class TileHighlight : Node2D
         QueueRedraw();
     }
 
+    public void SetZoom(float zoom)
+    {
+        _currentZoom = zoom;
+        QueueRedraw();
+    }
+
     public override void _Draw()
     {
         var rect = new Rect2(-_tileSize / 2, _tileSize);
-        DrawRect(rect, BorderColor, filled: false, width: BorderSize);
+        float worldThickness = ScreenSpaceThickness / _currentZoom;
+        DrawRect(rect, BorderColor, filled: false, width: worldThickness, antialiased: true);
     }
 }

@@ -67,6 +67,7 @@ public partial class TerrainGenerator : Godot.TileMapLayer
 
                 var tile = new TileData
                 {
+                    Coords = new Vector2I(x, y),
                     Biome = GetTileForClimate(temp, moist),
                     IsMountain = mountainVal > 0.85f,
                     IsWater = !isLand[x, y],
