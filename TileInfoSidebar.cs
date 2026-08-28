@@ -66,7 +66,14 @@ public partial class TileInfoSidebar : CanvasLayer
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event.IsActionPressed("ui_cancel"))
+        if (
+            @event.IsActionPressed("ui_cancel")
+            || (
+                @event is InputEventMouseButton mb
+                && mb.Pressed
+                && mb.ButtonIndex == MouseButton.Right
+            )
+        )
         {
             SlideOut();
         }
