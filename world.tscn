@@ -1,11 +1,16 @@
 [gd_scene format=3 uid="uid://bp1uai2faj0at"]
 
+[ext_resource type="Script" uid="uid://cxtmap4r0jodb" path="res://ViewManager.cs" id="1_gbfbk"]
 [ext_resource type="Texture2D" uid="uid://jo6u7j7wmbl5" path="res://biome_tiles.png" id="1_tlwt5"]
 [ext_resource type="Script" uid="uid://bpecex7mvvdgv" path="res://MapCamera.cs" id="2_fj7yv"]
+[ext_resource type="Script" uid="uid://inc5flmef712" path="res://NavBar.cs" id="2_ioo17"]
 [ext_resource type="Script" uid="uid://b3xraf0dqra6f" path="res://TerrainGenerator.cs" id="2_tlwt5"]
 [ext_resource type="Script" uid="uid://1i7cqkpb3af7" path="res://TileHighlight.cs" id="4_036b0"]
 [ext_resource type="Script" uid="uid://cdyyg17nxh1l7" path="res://TileInfoSidebar.cs" id="4_dwbse"]
 [ext_resource type="Script" uid="uid://cljftm8wjsax0" path="res://TileSelector.cs" id="5_dwbse"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gbfbk"]
+bg_color = Color(0, 0, 0, 1)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aqk2v"]
 texture = ExtResource("1_tlwt5")
@@ -28,20 +33,62 @@ sources/0 = SubResource("TileSetAtlasSource_aqk2v")
 
 [node name="World" type="Node2D" unique_id=1051817960]
 
-[node name="TerrainGenerator" type="TileMapLayer" parent="." unique_id=1026201501]
+[node name="ViewManager" type="Control" parent="." unique_id=550082366]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_gbfbk")
+MapViewPath = NodePath("../MapViewControl")
+SettingsVewPath = NodePath("../SettingsScreen/SettingsView")
+
+[node name="NavBar" type="CanvasLayer" parent="." unique_id=1077871997]
+script = ExtResource("2_ioo17")
+ViewManagerPath = NodePath("../ViewManager")
+MapButtonPath = NodePath("PanelContainer/VBoxContainer/MapButton")
+SettingsButtonPath = NodePath("PanelContainer/VBoxContainer/SettingsButton")
+
+[node name="PanelContainer" type="PanelContainer" parent="NavBar" unique_id=1200637867]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 70.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_gbfbk")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="NavBar/PanelContainer" unique_id=957759147]
+layout_mode = 2
+
+[node name="MapButton" type="Button" parent="NavBar/PanelContainer/VBoxContainer" unique_id=2002383547]
+layout_mode = 2
+text = "Map
+"
+
+[node name="SettingsButton" type="Button" parent="NavBar/PanelContainer/VBoxContainer" unique_id=342252286]
+layout_mode = 2
+text = "Settings"
+
+[node name="MapViewControl" type="Control" parent="." unique_id=64718424]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MapView" type="Node2D" parent="MapViewControl" unique_id=45639227]
+
+[node name="TerrainGenerator" type="TileMapLayer" parent="MapViewControl/MapView" unique_id=1026201501]
 tile_set = SubResource("TileSet_vdd6a")
 script = ExtResource("2_tlwt5")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=2059742931]
+[node name="Camera2D" type="Camera2D" parent="MapViewControl/MapView" unique_id=2059742931]
 script = ExtResource("2_fj7yv")
 
-[node name="TileInfoSidebar" type="CanvasLayer" parent="." unique_id=1633626784]
+[node name="TileInfoSidebar" type="CanvasLayer" parent="MapViewControl/MapView" unique_id=1633626784]
 script = ExtResource("4_dwbse")
 PanelPath = NodePath("PanelContainer")
 CoordsDisplayPath = NodePath("PanelContainer/VBoxContainer/TileCoords")
 BiomeDisplayPath = NodePath("PanelContainer/VBoxContainer/Biome")
 
-[node name="PanelContainer" type="PanelContainer" parent="TileInfoSidebar" unique_id=1882092998]
+[node name="PanelContainer" type="PanelContainer" parent="MapViewControl/MapView/TileInfoSidebar" unique_id=1882092998]
 custom_minimum_size = Vector2(250, 0)
 anchors_preset = 11
 anchor_left = 1.0
@@ -50,27 +97,43 @@ anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TileInfoSidebar/PanelContainer" unique_id=461584593]
+[node name="VBoxContainer" type="VBoxContainer" parent="MapViewControl/MapView/TileInfoSidebar/PanelContainer" unique_id=461584593]
 layout_mode = 2
 
-[node name="TileCoords" type="Label" parent="TileInfoSidebar/PanelContainer/VBoxContainer" unique_id=1730633185]
+[node name="TileCoords" type="Label" parent="MapViewControl/MapView/TileInfoSidebar/PanelContainer/VBoxContainer" unique_id=1730633185]
 layout_mode = 2
 text = "Selected Tile: "
 
-[node name="Biome" type="Label" parent="TileInfoSidebar/PanelContainer/VBoxContainer" unique_id=877344238]
+[node name="Biome" type="Label" parent="MapViewControl/MapView/TileInfoSidebar/PanelContainer/VBoxContainer" unique_id=877344238]
 layout_mode = 2
 text = "Biome: "
 
-[node name="SelectedTileHighlight" type="Node2D" parent="." unique_id=151764949]
+[node name="SelectedTileHighlight" type="Node2D" parent="MapViewControl/MapView" unique_id=151764949]
 script = ExtResource("4_036b0")
 
-[node name="HoveredTileHighlight" type="Node2D" parent="." unique_id=166263589]
+[node name="HoveredTileHighlight" type="Node2D" parent="MapViewControl/MapView" unique_id=166263589]
 script = ExtResource("4_036b0")
 BorderColor = Color(0.98243207, 0.9418409, 0.9999998, 1)
 
-[node name="TileSelector" type="Node2D" parent="." unique_id=460573202]
+[node name="TileSelector" type="Node2D" parent="MapViewControl/MapView" unique_id=460573202]
 script = ExtResource("5_dwbse")
 TerrainGeneratorPath = NodePath("../TerrainGenerator")
 HoverHighlightPath = NodePath("../HoveredTileHighlight")
 SelectedHighlightPath = NodePath("../SelectedTileHighlight")
 SidebarPath = NodePath("../TileInfoSidebar")
+
+[node name="SettingsScreen" type="CanvasLayer" parent="." unique_id=1983476017]
+
+[node name="SettingsView" type="Control" parent="SettingsScreen" unique_id=1929772965]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="SettingsScreen/SettingsView" unique_id=853114175]
+layout_mode = 0
+offset_left = 638.0
+offset_top = 282.0
+offset_right = 806.0
+offset_bottom = 305.0
+text = "Settings Coming Soon"

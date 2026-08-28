@@ -102,6 +102,5 @@ public partial class TileSelector : Node2D
         TileData tile = WorldState.Instance.Tiles[cell.X, cell.Y];
 
         _sidebar.UpdateTileInfo(tile);
-        //TODO - Update Sidebar Info
     }
 }
