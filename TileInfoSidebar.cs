@@ -13,11 +13,15 @@ public partial class TileInfoSidebar : CanvasLayer
     public NodePath BiomeDisplayPath;
 
     [Export]
+    public NodePath ResourceDisplayPath;
+
+    [Export]
     public float SlideDuration = 0.25f;
 
     private Control _panel;
     private Label _coordsDisplay;
     private Label _biomeDisplay;
+    private Label _resourceDisplay;
     private float _hiddenX;
     private float _visibleX;
     private Tween _tween;
@@ -27,7 +31,8 @@ public partial class TileInfoSidebar : CanvasLayer
     {
         _panel = GetNode<Control>(PanelPath);
         _coordsDisplay = GetNode<Label>(CoordsDisplayPath);
-        _biomeDisplay = GetNode<Label>(BiomeDisplayPath);
+        _biomeDisplay = GetNode<Label>(BiomeDisplayPath);   
+        _resourceDisplay = GetNode<Label>(ResourceDisplayPath);
 
         _visibleX = _panel.Position.X;
         _hiddenX = _visibleX + _panel.Size.X;
@@ -39,8 +44,10 @@ public partial class TileInfoSidebar : CanvasLayer
         var biomeDisplay = tile.IsMountain
             ? "Mountain"
             : (tile.IsWater ? "Water" : BiomeDatabase.Definitions[tile.Biome].DisplayName);
+        var resourceDisplay = $"Wood: {tile.Resources.Wood} \n Stone: {tile.Resources.Stone}";
         _coordsDisplay.Text = $"Selected Tile: {tile.Coords.X}, {tile.Coords.Y}";
         _biomeDisplay.Text = $"Biome: {biomeDisplay}";
+        _resourceDisplay.Text = $"Resources {resourceDisplay}";
         SlideIn();
     }
 

@@ -65,12 +65,15 @@ public partial class TerrainGenerator : Godot.TileMapLayer
                 var moist = (rawMoist + 1f) / 2f;
                 moistureMap[x, y] = moist;
 
+                var biome = GetTileForClimate(temp, moist);
+
                 var tile = new TileData
                 {
                     Coords = new Vector2I(x, y),
-                    Biome = GetTileForClimate(temp, moist),
+                    Biome = biome,
                     IsMountain = mountainVal > 0.85f,
                     IsWater = !isLand[x, y],
+                    Resources = GetResourcesForBiome(biome, mountainVal > 0.85f, !isLand[x, y])
                 };
 
                 WorldState.Instance.Tiles[x, y] = tile;
@@ -119,4 +122,75 @@ public partial class TerrainGenerator : Godot.TileMapLayer
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta) { }
+
+    private TileResources GetResourcesForBiome(BiomeType biome, bool isMountain, bool isWater)
+    {
+        Random rnd = new Random();
+        if (isWater){
+            return new TileResources{
+                Wood = 0,
+                Stone = 0
+            };
+        }
+        if (isMountain){
+            return new TileResources{
+                Wood = 0,
+                Stone = rnd.Next(7500, 10000)
+            };
+        }
+
+        switch (biome) {
+            case BiomeType.Tundra:
+                return new TileResources{
+                    Wood = rnd.Next(300, 500),
+                    Stone = rnd.Next(0, 0)
+                };
+            case BiomeType.Taiga:
+                return new TileResources{
+                    Wood = rnd.Next(300, 500),
+                    Stone = rnd.Next(0, 0)
+                };
+            case BiomeType.SnowyForest:
+                return new TileResources{
+                    Wood = rnd.Next(300, 500),
+                    Stone = rnd.Next(0, 0)
+                };
+            case BiomeType.Plains:
+                return new TileResources{
+                    Wood = rnd.Next(300, 500),
+                    Stone = rnd.Next(0, 0)
+                };
+            case BiomeType.Grassland:
+                return new TileResources{
+                    Wood = rnd.Next(300, 500),
+                    Stone = rnd.Next(0, 0)
+                };
+            case BiomeType.Forest:
+                return new TileResources{
+                    Wood = rnd.Next(300, 500),
+                    Stone = rnd.Next(0, 0)
+                };
+            case BiomeType.Desert:
+                return new TileResources{
+                    Wood = rnd.Next(300, 500),
+                    Stone = rnd.Next(0, 0)
+                };
+            case BiomeType.Savanna:
+                return new TileResources{
+                    Wood = rnd.Next(300, 500),
+                    Stone = rnd.Next(0, 0)
+                };
+            case BiomeType.Jungle:
+                return new TileResources{
+                    Wood = rnd.Next(300, 500),
+                    Stone = rnd.Next(0, 0)
+                };
+            default:
+                GD.PrintErr("Couldn't Find Biome");
+                return new TileResources{
+                    Wood = rnd.Next(0, 0),
+                    Stone = rnd.Next(0, 0)
+                };
+        }
+    }
 }

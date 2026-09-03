@@ -87,6 +87,7 @@ script = ExtResource("4_dwbse")
 PanelPath = NodePath("PanelContainer")
 CoordsDisplayPath = NodePath("PanelContainer/VBoxContainer/TileCoords")
 BiomeDisplayPath = NodePath("PanelContainer/VBoxContainer/Biome")
+ResourceDisplayPath = NodePath("PanelContainer/VBoxContainer/Resources")
 
 [node name="PanelContainer" type="PanelContainer" parent="MapViewControl/MapView/TileInfoSidebar" unique_id=1882092998]
 custom_minimum_size = Vector2(250, 0)
@@ -107,6 +108,10 @@ text = "Selected Tile: "
 [node name="Biome" type="Label" parent="MapViewControl/MapView/TileInfoSidebar/PanelContainer/VBoxContainer" unique_id=877344238]
 layout_mode = 2
 text = "Biome: "
+
+[node name="Resources" type="Label" parent="MapViewControl/MapView/TileInfoSidebar/PanelContainer/VBoxContainer" unique_id=2021361456]
+layout_mode = 2
+text = "Resources:"
 
 [node name="SelectedTileHighlight" type="Node2D" parent="MapViewControl/MapView" unique_id=151764949]
 script = ExtResource("4_036b0")
