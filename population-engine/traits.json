@@ -1,0 +1,114 @@
+[
+  {
+    "DisplayName": "Wicked",
+    "id": 0,
+    "exclusiveWith": [
+      1,
+      2
+    ]
+  },
+  {
+    "DisplayName": "Righetous",
+    "id": 1,
+    "exclusiveWith": [
+      0
+    ]
+  },
+  {
+    "DisplayName": "Kind",
+    "id": 2,
+    "exclusiveWith": [
+      0
+    ]
+  },
+  {
+    "DisplayName": "Intelligent",
+    "id": 3,
+    "exclusiveWith": [
+      4
+    ]
+  },
+  {
+    "DisplayName": "Dull-minded",
+    "id": 4,
+    "exclusiveWith": [
+      3
+    ]
+  },
+  {
+    "DisplayName": "Quiet",
+    "id": 5,
+    "exclusiveWith": [
+      6
+    ]
+  },
+  {
+    "DisplayName": "Talkative",
+    "id": 6,
+    "exclusiveWith": [
+      5
+    ]
+  },
+  {
+    "DisplayName": "Brave",
+    "id": 7,
+    "exclusiveWith": [
+      8
+    ]
+  },
+  {
+    "DisplayName": "Cowardly",
+    "id": 8,
+    "exclusiveWith": [
+      7
+    ]
+  },
+  {
+    "DisplayName": "Determined",
+    "id": 9,
+    "exclusiveWith": [
+      10
+    ]
+  },
+  {
+    "DisplayName": "Noncommittal",
+    "id": 10,
+    "exclusiveWith": [
+      9
+    ]
+  },
+  {
+    "DisplayName": "Calm",
+    "id": 11,
+    "exclusiveWith": [
+      12
+    ]
+  },
+  {
+    "DisplayName": "Curious",
+    "id": 12,
+    "exclusiveWith": [
+      11
+    ]
+  },
+  {
+    "DisplayName": "Excitable",
+    "id": 13,
+    "exclusiveWith": [
+    ]
+  },
+  {
+    "DisplayName": "Friendly",
+    "id": 14,
+    "exclusiveWith": [
+      15
+    ]
+  },
+  {
+    "DisplayName": "Loner",
+    "id": 15,
+    "exclusiveWith": [
+      14
+    ]
+  }
+]

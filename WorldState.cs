@@ -6,6 +6,7 @@ public partial class WorldState : Node
 	public TileData[,] Tiles;
 	public uint startingPopulation { get; private set;}
 	
+	
 
 	public override void _Ready()
 	{
