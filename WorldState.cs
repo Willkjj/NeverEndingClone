@@ -4,7 +4,8 @@ public partial class WorldState : Node
 {
 	public static WorldState Instance { get; private set; }
 	public TileData[,] Tiles;
-	public uint startingPopulation { get; private set;}
+	public uint StartingPopulation { get; private set;}
+	public ushort CurrentYear { get; private set;}
 	
 	
 
@@ -13,7 +14,8 @@ public partial class WorldState : Node
 		Instance = this;
 		Tiles = new TileData[256, 256];
 
-		startingPopulation = 250;
+		StartingPopulation = 250;
+		CurrentYear = 0;
 
 	}
 }
