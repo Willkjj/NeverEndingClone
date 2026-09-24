@@ -79,23 +79,23 @@ public partial class Inhabitants : Node
 	public TraitName PickTrait1()
 	{
 		Random random = new Random();
-		return (TraitName)random.Next(0,TraitDatabase.Traits.Count);
+		return (TraitName)random.Next(0,TraitDatabase.Definitions.Count);
 	}
 	public TraitName PickTrait2(TraitName trait1)
 	{
 		Random random = new Random();
 
 		byte[] _exclusiveList = TraitDatabase.Definitions[trait1].exclusiveWith;
-		int _randomTraitIndex = random.Next(TraitDatabase.Traits.Count);
-		TraitDefinition _trait2 = TraitDatabase.Traits[_randomTraitIndex];
+		TraitName _randomTrait = (TraitName)random.Next(TraitDatabase.Definitions.Count);
+		TraitDefinition _trait2 = TraitDatabase.Definitions[_randomTrait];
 
-		while (_exclusiveList.Contains((byte)_randomTraitIndex) || _trait2.isFlaw)
+		while (_exclusiveList.Contains((byte)_randomTrait) || _trait2.isFlaw)
 		{
-			_randomTraitIndex = random.Next(TraitDatabase.Traits.Count);	
-			_trait2 = TraitDatabase.Traits[_randomTraitIndex];
+			_randomTrait = (TraitName)random.Next(TraitDatabase.Definitions.Count);	
+			_trait2 = TraitDatabase.Definitions[_randomTrait];
 		}
 
-		return (TraitName)_randomTraitIndex;
+		return _randomTrait;
 	}
 
 	public string GetDisplayString()
