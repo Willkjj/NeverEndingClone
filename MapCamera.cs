@@ -15,6 +15,8 @@ public partial class MapCamera : Camera2D
   [Export]
   public float MaxZoom = 1.5f;
 
+  private bool _isDragging = false;
+
   public override void _Ready()
   {
     Position = new Vector2(16384, 16384); // adjust to your actual (width * tileSize) / 2
@@ -52,6 +54,19 @@ public partial class MapCamera : Camera2D
 
   public override void _UnhandledInput(InputEvent @event)
   {
+    if (@event is InputEventMouseButton mouseButton)
+    {
+      if (mouseButton.ButtonIndex == MouseButton.Middle)
+      {
+        _isDragging = mouseButton.Pressed;
+      }
+    }
+
+    if (@event is InputEventMouseMotion mouseMotion && _isDragging)
+    {
+      Position -= mouseMotion.Relative / Zoom.X;
+    }
+
     if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed)
     {
       if (mouseEvent.ButtonIndex == MouseButton.WheelUp)
@@ -69,23 +84,5 @@ public partial class MapCamera : Camera2D
   {
     float newZoom = Mathf.Clamp(Zoom.X + amount, MinZoom, MaxZoom);
     Zoom = new Vector2(newZoom, newZoom);
-  }
-
-  private bool is_dragging = false;
-
-  public override void _Input(InputEvent @event)
-  {
-    if (@event is InputEventMouseButton mouseButton)
-    {
-      if (mouseButton.ButtonIndex == MouseButton.Middle)
-      {
-        is_dragging = mouseButton.Pressed;
-      }
-    }
-
-    if (@event is InputEventMouseMotion mouseMotion && is_dragging)
-    {
-      Position -= mouseMotion.Relative / Zoom.X;
-    }
   }
 }
