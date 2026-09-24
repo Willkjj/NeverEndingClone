@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.IO;
+using System;
 
 public class TraitDefinition
 {
@@ -30,7 +31,7 @@ public static class TraitDatabase
         {
             DisplayName = "Kind",
             isFlaw = false,
-            exclusiveWith = [0]
+            exclusiveWith = [0,16]
         },
         [TraitName.Intelligent] = new TraitDefinition
         {
@@ -109,6 +110,18 @@ public static class TraitDatabase
             DisplayName = "Loner",
             isFlaw = false,
             exclusiveWith = [14]
+        },
+        [TraitName.Spiteful] = new TraitDefinition
+        {
+            DisplayName = "Spiteful",
+            isFlaw = true,
+            exclusiveWith = [2]
+        },
+        [TraitName.Slow] = new TraitDefinition
+        {
+            DisplayName = "Slow",
+            isFlaw = true,
+            exclusiveWith = []
         }
     };
 }

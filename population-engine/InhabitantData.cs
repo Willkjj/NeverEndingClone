@@ -6,7 +6,7 @@ public struct InhabitantData
 	public Gender gender;
 	public TraitName trait1;
 	public TraitName trait2;
-	public byte flaw;
+	public TraitName flaw;
 	public byte ideal;
 	public byte strength;
 	public byte dexterity;

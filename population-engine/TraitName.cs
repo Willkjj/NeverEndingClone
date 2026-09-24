@@ -15,5 +15,7 @@ public enum TraitName : byte
     Excitable,
     Curious,
     Friendly,
-    Loner
+    Loner,
+    Spiteful,
+    Slow
 }

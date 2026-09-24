@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Godot;
+using Godot.Collections;
 
 
 public partial class Inhabitants : Node
@@ -19,16 +21,6 @@ public partial class Inhabitants : Node
 		// Population = new InhabitantData[WorldState.Instance.startingPopulation];
 		Population = GenerateRandomInhabitants(WorldState.Instance.StartingPopulation);
 		GD.Print(GetDisplayString());
-	}
-	public override void _Process(double delta)
-	{
-		base._Process(delta);
-
-		if (Input.IsKeyPressed(Key.Ctrl) && Input.IsKeyPressed(Key.Shift) && Input.IsKeyPressed(Key.D))
-		{
-			GD.Print("hi");
-			
-		}
 	}
 	public override void _UnhandledInput(InputEvent @event)
 	{
@@ -49,7 +41,7 @@ public partial class Inhabitants : Node
 			_dummyInhabitant.gender = (Gender)random.Next(0,2);
 			_dummyInhabitant.trait1 = PickTrait1();
 			_dummyInhabitant.trait2 = PickTrait2(_dummyInhabitant.trait1);
-			_dummyInhabitant.flaw = (byte)random.Next(0,1);
+			_dummyInhabitant.flaw = PickFlaw(_dummyInhabitant.trait1, _dummyInhabitant.trait2);
 			_dummyInhabitant.ideal = (byte)random.Next(0,1);
 
 			_dummyInhabitant.strength = (byte)random.Next(0,21);
@@ -78,24 +70,43 @@ public partial class Inhabitants : Node
 	} 
 	public TraitName PickTrait1()
 	{
-		Random random = new Random();
-		return (TraitName)random.Next(0,TraitDatabase.Definitions.Count);
+		TraitName traitName = (TraitName)Random.Shared.Next(0,TraitDatabase.Definitions.Count);
+		TraitDefinition trait = TraitDatabase.Definitions[traitName];
+
+		var possibleTraits = TraitDatabase.Definitions
+			.Where(pair => !pair.Value.isFlaw)
+			.Select(pair => pair.Key)
+			.ToList();
+
+		return possibleTraits[Random.Shared.Next(possibleTraits.Count)];
 	}
 	public TraitName PickTrait2(TraitName trait1)
 	{
-		Random random = new Random();
 
-		byte[] _exclusiveList = TraitDatabase.Definitions[trait1].exclusiveWith;
-		TraitName _randomTrait = (TraitName)random.Next(TraitDatabase.Definitions.Count);
-		TraitDefinition _trait2 = TraitDatabase.Definitions[_randomTrait];
+		var exclusiveList = TraitDatabase.Definitions[trait1].exclusiveWith ?? System.Array.Empty<byte>();
+		var possibleTraits = TraitDatabase.Definitions
+			.Where(pair =>
+			pair.Key != trait1 &&
+			!exclusiveList.Contains((byte)pair.Key) &&
+			!pair.Value.isFlaw)
+			.Select(pair => pair.Key)
+			.ToList();
 
-		while (_exclusiveList.Contains((byte)_randomTrait) || _trait2.isFlaw)
-		{
-			_randomTrait = (TraitName)random.Next(TraitDatabase.Definitions.Count);	
-			_trait2 = TraitDatabase.Definitions[_randomTrait];
-		}
+		return possibleTraits[Random.Shared.Next(possibleTraits.Count)];
+		
+	}
+	public TraitName PickFlaw(TraitName trait1, TraitName trait2)
+	{
+		var exclusiveList = TraitDatabase.Definitions[trait1].exclusiveWith ?? System.Array.Empty<byte>()
+			.Concat(TraitDatabase.Definitions[trait2].exclusiveWith);
+		var possibleFlaws = TraitDatabase.Definitions
+			.Where(pair =>
+			pair.Value.isFlaw &&
+			!exclusiveList.Contains((byte)pair.Key))
+			.Select(pair => pair.Key)
+			.ToList();
 
-		return _randomTrait;
+		return possibleFlaws[Random.Shared.Next(possibleFlaws.Count)];
 	}
 
 	public string GetDisplayString()
@@ -105,7 +116,7 @@ public partial class Inhabitants : Node
 		StringBuilder stringBuilder = new StringBuilder("Population: \n\n");
 		foreach (var inhabitant in Population)
 		{
-			stringBuilder.Append($"{inhabitant.gender}\n{inhabitant.trait1}\n{inhabitant.trait2}\n{inhabitant.flaw}\n{inhabitant.ideal}\n{inhabitant.strength}\n{inhabitant.dexterity}\n{inhabitant.constitution}\n{inhabitant.intelligence}\n{inhabitant.wisdom}\n{inhabitant.charisma}\n{inhabitant.age}\n{inhabitant.birthYear}\n{inhabitant.job}\n{inhabitant.firstName}\n{inhabitant.lastName}\n{inhabitant.id}\n{inhabitant.motherID}\n{inhabitant.fatherID}\n\n");
+			stringBuilder.Append($"{inhabitant.gender}\n{inhabitant.trait1}\n{inhabitant.trait2}\n{inhabitant.flaw}\n{inhabitant.ideal}\nSTR:{inhabitant.strength}\nDEX:{inhabitant.dexterity}\nCON:{inhabitant.constitution}\nINT:{inhabitant.intelligence}\nWIS:{inhabitant.wisdom}\nCHA:{inhabitant.charisma}\nAGE:{inhabitant.age}\nBD:{inhabitant.birthYear}\n{inhabitant.job}\n{inhabitant.firstName}\n{inhabitant.lastName}\n{inhabitant.id}\n{inhabitant.motherID}\n{inhabitant.fatherID}\n\n");
 		}
 		return stringBuilder.ToString();
 	}
