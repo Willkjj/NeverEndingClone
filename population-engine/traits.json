@@ -33,7 +33,7 @@
     ]
   },
   {
-    "DisplayName": "Dull-minded",
+    "DisplayName": "DullMinded",
     "id": 4,
     "isFlaw": true,
     "exclusiveWith": [
@@ -93,7 +93,7 @@
     "id": 11,
     "isFlaw": false,
     "exclusiveWith": [
-      12
+      13
     ]
   },
   {
@@ -101,7 +101,6 @@
     "id": 12,
     "isFlaw": false,
     "exclusiveWith": [
-      11
     ]
   },
   {
@@ -109,6 +108,7 @@
     "id": 13,
     "isFlaw": false,
     "exclusiveWith": [
+      11
     ]
   },
   {

@@ -1,0 +1,19 @@
+public enum TraitName : byte
+{
+    Wicked,
+    Righteous,
+    Kind,
+    Intelligent,
+    DullMinded,
+    Quiet,
+    Talkative,
+    Brave,
+    Cowardly,
+    Determined,
+    Noncommittal,
+    Calm,
+    Excitable,
+    Curious,
+    Friendly,
+    Loner
+}

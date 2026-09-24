@@ -3,9 +3,9 @@ using System.Collections.Generic;
 public struct InhabitantData
 {
 	//genetic data
-	public byte gender;
-	public byte trait1;
-	public byte trait2;
+	public Gender gender;
+	public TraitName trait1;
+	public TraitName trait2;
 	public byte flaw;
 	public byte ideal;
 	public byte strength;
