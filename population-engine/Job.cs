@@ -1,4 +1,5 @@
-public enum Job : byte{
+public enum Job : byte
+{
     Unemployed,
     Farmer,
     Soldier,

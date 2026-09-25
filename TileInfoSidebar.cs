@@ -31,7 +31,7 @@ public partial class TileInfoSidebar : CanvasLayer
     {
         _panel = GetNode<Control>(PanelPath);
         _coordsDisplay = GetNode<Label>(CoordsDisplayPath);
-        _biomeDisplay = GetNode<Label>(BiomeDisplayPath);   
+        _biomeDisplay = GetNode<Label>(BiomeDisplayPath);
         _resourceDisplay = GetNode<Label>(ResourceDisplayPath);
 
         _visibleX = _panel.Position.X;
