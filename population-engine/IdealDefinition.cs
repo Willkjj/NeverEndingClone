@@ -10,7 +10,7 @@ public class IdealDefinition
 }
 public static class IdealDatabase
 {
-    public static readonly Dictionary<Ideal,IdealDefinition> Definitions = new()
+    public static readonly Dictionary<Ideal, IdealDefinition> Definitions = new()
     {
         [Ideal.Perfection] = new IdealDefinition
         {

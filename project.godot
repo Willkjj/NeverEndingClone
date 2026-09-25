@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 WorldState="*uid://cexmc77qym5mh"
 Inhabitants="*uid://cwfq87wmfwtje"
+Clock="*uid://c0swnwr0xdu48"
 
 [display]
 
