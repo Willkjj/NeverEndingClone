@@ -2,28 +2,20 @@ using Godot;
 
 public partial class WorldState : Node
 {
-  public static WorldState Instance { get; private set; }
-  public TileData[,] Tiles;
+	public static WorldState Instance { get; private set; }
+	public TileData[,] Tiles;
+	public uint StartingPopulation { get; private set;}
+	public ushort CurrentYear { get; private set;}
+	
+	
 
-  public override void _Ready()
-  {
-    Instance = this;
-    Tiles = new TileData[256, 256];
+	public override void _Ready()
+	{
+		Instance = this;
+		Tiles = new TileData[256, 256];
 
-    Clock.Instance.Tick += OnClockTick;
-  }
+		StartingPopulation = 250;
+		CurrentYear = 0;
 
-  private void OnClockTick(int tickCount)
-  {
-    GD.Print($"Clock tick fired: {tickCount}");
-  }
-
-  // Remove the event listener if worldstate is ever unloaded (it shouldn't)
-  public override void _ExitTree()
-  {
-    if (Clock.Instance != null)
-    {
-      Clock.Instance.Tick -= OnClockTick;
-    }
-  }
+	}
 }
