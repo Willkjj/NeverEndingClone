@@ -42,14 +42,11 @@ public partial class Inhabitants : Node
 			_dummyInhabitant.trait1 = PickTrait1();
 			_dummyInhabitant.trait2 = PickTrait2(_dummyInhabitant.trait1);
 			_dummyInhabitant.flaw = PickFlaw(_dummyInhabitant.trait1, _dummyInhabitant.trait2);
-			_dummyInhabitant.ideal = (byte)random.Next(0,1);
+			_dummyInhabitant.ideal = PickIdeal();
 
-			_dummyInhabitant.strength = (byte)random.Next(0,21);
-			_dummyInhabitant.dexterity = (byte)random.Next(0,21);
-			_dummyInhabitant.constitution = (byte)random.Next(0,21);
-			_dummyInhabitant.intelligence = (byte)random.Next(0,21);
-			_dummyInhabitant.wisdom = (byte)random.Next(0,21);
-			_dummyInhabitant.charisma = (byte)random.Next(0,21);
+			//sets str, dex, con, int, wis, cha
+			PickStat(ref _dummyInhabitant);
+
 
 			//non genetic
 			_dummyInhabitant.age = (byte)random.Next(0,80);
@@ -108,6 +105,44 @@ public partial class Inhabitants : Node
 
 		return possibleFlaws[Random.Shared.Next(possibleFlaws.Count)];
 	}
+	public Ideal PickIdeal()
+	{
+		var possibleIdeals = IdealDatabase.Definitions
+			.Select(pair => pair.Key)
+			.ToList();
+
+		return possibleIdeals[Random.Shared.Next(possibleIdeals.Count)];
+	}
+	public void PickStat(ref InhabitantData inhabitant)
+	{
+		byte[] stats = [7,7,7,7,7,7];
+		int pointsAvailable = 20;
+		int maxPoints = 13;
+
+		while (pointsAvailable != 0)
+		{
+			int currentStat = Random.Shared.Next(stats.Count());
+
+			int points = Random.Shared.Next(0,3);
+
+			points = (points <= pointsAvailable) ? points : points =  pointsAvailable;
+			points = (points + stats[currentStat] <= maxPoints) ? points : points =  maxPoints - stats[currentStat];
+
+			stats[currentStat] += (byte)points;
+			pointsAvailable -= points;
+		}
+		inhabitant.strength = stats[0];
+		inhabitant.dexterity = stats[1];
+		inhabitant.constitution = stats[2];
+		inhabitant.intelligence = stats[3];
+		inhabitant.wisdom = stats[4];
+		inhabitant.charisma = stats[5];
+		
+	}
+	public void PickStat(InhabitantData inhabitant, byte motherID, byte fatherID)
+	{
+	}
+
 
 	public string GetDisplayString()
 	{
@@ -116,7 +151,7 @@ public partial class Inhabitants : Node
 		StringBuilder stringBuilder = new StringBuilder("Population: \n\n");
 		foreach (var inhabitant in Population)
 		{
-			stringBuilder.Append($"{inhabitant.gender}\n{inhabitant.trait1}\n{inhabitant.trait2}\n{inhabitant.flaw}\n{inhabitant.ideal}\nSTR:{inhabitant.strength}\nDEX:{inhabitant.dexterity}\nCON:{inhabitant.constitution}\nINT:{inhabitant.intelligence}\nWIS:{inhabitant.wisdom}\nCHA:{inhabitant.charisma}\nAGE:{inhabitant.age}\nBD:{inhabitant.birthYear}\n{inhabitant.job}\n{inhabitant.firstName}\n{inhabitant.lastName}\n{inhabitant.id}\n{inhabitant.motherID}\n{inhabitant.fatherID}\n\n");
+			stringBuilder.Append($"{inhabitant.gender}\n{inhabitant.trait1}\n{inhabitant.trait2}\n{inhabitant.flaw}\n{inhabitant.ideal}\nSTR:{inhabitant.strength}\nDEX:{inhabitant.dexterity}\nCON:{inhabitant.constitution}\nINT:{inhabitant.intelligence}\nWIS:{inhabitant.wisdom}\nCHA:{inhabitant.charisma}\nAGE:{inhabitant.age}\nBD:{inhabitant.birthYear}\n{inhabitant.job}\n{inhabitant.firstName}\n{inhabitant.lastName}\n{inhabitant.id}\nMother:{inhabitant.motherID}\nFather:{inhabitant.fatherID}\n\n");
 		}
 		return stringBuilder.ToString();
 	}
@@ -126,7 +161,7 @@ public partial class Inhabitants : Node
 		StringBuilder stringBuilder = new StringBuilder("Population:\n");
 		foreach (var inhabitant in Population)
 		{
-			stringBuilder.Append($"{(byte)inhabitant.gender}{(byte)inhabitant.trait1}{(byte)inhabitant.trait2}{inhabitant.flaw}{inhabitant.ideal}{inhabitant.strength}{inhabitant.dexterity}{inhabitant.constitution}{inhabitant.intelligence}{inhabitant.wisdom}{inhabitant.charisma}{inhabitant.age}{inhabitant.birthYear}{(byte)inhabitant.job}{inhabitant.firstName}{inhabitant.lastName}{inhabitant.id}{inhabitant.motherID}{inhabitant.fatherID}\n");
+			stringBuilder.Append($"{(byte)inhabitant.gender}{(byte)inhabitant.trait1}{(byte)inhabitant.trait2}{(byte)inhabitant.flaw}{(byte)inhabitant.ideal}{inhabitant.strength}{inhabitant.dexterity}{inhabitant.constitution}{inhabitant.intelligence}{inhabitant.wisdom}{inhabitant.charisma}{inhabitant.age}{inhabitant.birthYear}{(byte)inhabitant.job}{inhabitant.firstName}{inhabitant.lastName}{inhabitant.id}{inhabitant.motherID}{inhabitant.fatherID}\n");
 		}
 		return stringBuilder.ToString();
 	}

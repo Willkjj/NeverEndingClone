@@ -7,7 +7,7 @@ public struct InhabitantData
 	public TraitName trait1;
 	public TraitName trait2;
 	public TraitName flaw;
-	public byte ideal;
+	public Ideal ideal;
 	public byte strength;
 	public byte dexterity;
 	public byte constitution;
