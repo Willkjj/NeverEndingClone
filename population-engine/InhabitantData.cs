@@ -21,8 +21,8 @@ public struct InhabitantData
 	public byte firstName;
 	public byte lastName;
 
-	//family data
-	public uint id;
-	public uint? motherID;
-	public uint? fatherID;
+    //family data
+    public uint id;
+    public uint? motherID;
+    public uint? fatherID;
 }

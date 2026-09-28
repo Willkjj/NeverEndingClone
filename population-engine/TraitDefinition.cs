@@ -14,12 +14,13 @@ public class TraitDefinition
 
 public static class TraitDatabase
 {
-    public static readonly Dictionary<TraitName,TraitDefinition> Definitions = new() {
+    public static readonly Dictionary<TraitName, TraitDefinition> Definitions = new()
+    {
         [TraitName.Wicked] = new TraitDefinition
         {
             DisplayName = "Wicked",
             isFlaw = true,
-            exclusiveWith = [1,2]
+            exclusiveWith = [1, 2]
         },
         [TraitName.Righteous] = new TraitDefinition
         {
@@ -31,7 +32,7 @@ public static class TraitDatabase
         {
             DisplayName = "Kind",
             isFlaw = false,
-            exclusiveWith = [0,16]
+            exclusiveWith = [0, 16]
         },
         [TraitName.Intelligent] = new TraitDefinition
         {
@@ -54,7 +55,7 @@ public static class TraitDatabase
         [TraitName.Talkative] = new TraitDefinition
         {
             DisplayName = "Talkative",
-            isFlaw  = false,
+            isFlaw = false,
             exclusiveWith = [5]
         },
         [TraitName.Brave] = new TraitDefinition
