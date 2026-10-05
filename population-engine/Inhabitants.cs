@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +13,8 @@ using Godot.Collections;
 
 public partial class Inhabitants : Node
 {
-	public InhabitantData[] Population { get; private set;} = [];
+	public List<InhabitantData> Population { get; private set;} = new();
+	private int _lastProcesssedTick = -1; //FIXME: this should be double checked
 
 	public override void _Ready()
 	{
@@ -20,17 +22,113 @@ public partial class Inhabitants : Node
 
 		// Population = new InhabitantData[WorldState.Instance.startingPopulation];
 		Population = GenerateRandomInhabitants(WorldState.Instance.StartingPopulation);
-		GD.Print(GetDisplayString());
+		
+	}
+	public override void _Process(double delta)
+	{
+		int currentTick = Clock.Instance.TickCount;
+		if (currentTick % 12 == 0 && _lastProcesssedTick != currentTick)
+		{
+			_lastProcesssedTick = currentTick;
+			NewGeneration();
+		}
 	}
 	public override void _UnhandledInput(InputEvent @event)
 	{
 		base._UnhandledInput(@event);
 	}
+	public void Debug()
+	{
+		GD.Print("population count:",Population.Count);
+		GD.Print(GetSingleDisplayString(Population[Population.Count - 1]));
+	}
+	public void NewGeneration()
+	{
+		AgeUp();
+		CheckEligibleInhabitants();
+	}
+	public void AgeUp()
+	{
+		for (int i = Population.Count - 1; i >= 0; i--)
+		{
+			var inhabitant = Population[i];
+			inhabitant.age++;
+			if (inhabitant.age >= 80)
+			{
+				Population.RemoveAt(i);
+			}
+			else
+			{
+				Population[i] = inhabitant;
+			}
+		}
+	}
+	public void CheckEligibleInhabitants()
+	{
+		Stack<InhabitantData> bachelors = new();
+		Stack<InhabitantData> bachelorettes = new();
 
-	public InhabitantData[] GenerateRandomInhabitants(uint quantity)
+		for(int i = Population.Count - 1; i >= 0; i--)
+		{
+			if (Population[i].age < 50 && Population[i].age >= 18)
+			{
+				
+				if (Population[i].gender == Gender.Female && bachelors.Count == 0) // Pop[i] is a woman and no bachelors have been found
+				{
+				
+					bachelorettes.Push(Population[i]);
+				} else if (Population[i].gender == Gender.Male && bachelorettes.Count == 0) // Pop[i] is a man and no bachlorettes have been found
+				{
+					bachelors.Push(Population[i]);
+				}else  if (Population[i].gender == Gender.Female && bachelors.Count > 0) // Pop[i] is a woman and there are bachelors in the stack
+				{
+					GenerateChild(Population[i], bachelors.Pop());
+				} else if (Population[i].gender == Gender.Male && bachelorettes.Count > 0) // Pop[i] is a man and there are bachlorettes in the stack
+				{
+					GenerateChild(bachelorettes.Pop(), Population[i]);
+				}
+				else
+				{
+					//No eligibles found
+				}
+			}
+		}
+	}
+
+	public void GenerateChild(InhabitantData mother, InhabitantData father)
 	{
 
-		InhabitantData[] _dummyInhabitants = new InhabitantData[quantity];
+		InhabitantData _dummyInhabitant = new InhabitantData();
+
+		//genetic
+		_dummyInhabitant.gender = (Gender)Random.Shared.Next(2);
+		_dummyInhabitant.trait1 = PickTrait1(mother, father);
+		_dummyInhabitant.trait2 = PickTrait2(_dummyInhabitant.trait1);
+		_dummyInhabitant.flaw = PickFlaw(_dummyInhabitant.trait1, _dummyInhabitant.trait2);
+		_dummyInhabitant.ideal = PickIdeal();
+
+		//sets str, dex, con, int, wis, cha
+		PickStat(ref _dummyInhabitant);
+
+		_dummyInhabitant.age = 0;
+		_dummyInhabitant.birthYear = WorldState.Instance.CurrentYear;
+		_dummyInhabitant.firstName = PickFirstName(ref _dummyInhabitant);
+		_dummyInhabitant.lastName = father.lastName;
+
+		//family data
+		_dummyInhabitant.id = (uint)(Population.Count + 1);
+		_dummyInhabitant.motherID = mother.id;
+		_dummyInhabitant.fatherID = father.id;
+
+
+		Population.Add(_dummyInhabitant);
+		GD.Print("pop id: ",_dummyInhabitant.id);
+	}
+
+	public List<InhabitantData> GenerateRandomInhabitants(uint quantity)
+	{
+
+		List<InhabitantData> _dummyInhabitants = new ();
 
 		for (int i = 0; i < quantity; i++)
 		{
@@ -38,7 +136,7 @@ public partial class Inhabitants : Node
 			InhabitantData _dummyInhabitant = new InhabitantData();
 
 			//genetic
-			_dummyInhabitant.gender = (Gender)random.Next(0,2);
+			_dummyInhabitant.gender = (Gender)random.Next(2);
 			_dummyInhabitant.trait1 = PickTrait1();
 			_dummyInhabitant.trait2 = PickTrait2(_dummyInhabitant.trait1);
 			_dummyInhabitant.flaw = PickFlaw(_dummyInhabitant.trait1, _dummyInhabitant.trait2);
@@ -51,24 +149,21 @@ public partial class Inhabitants : Node
 			//non genetic
 			_dummyInhabitant.age = (byte)random.Next(0,80);
 			_dummyInhabitant.birthYear = (byte)(0 - _dummyInhabitant.age);
-			_dummyInhabitant.job = (Job)random.Next(0,Enum.GetValues<Job>().Length);
-			_dummyInhabitant.firstName = (byte)random.Next(0,NameDatabase.Names.Count + 1);
-			_dummyInhabitant.lastName = (byte)random.Next(0,NameDatabase.Names.Count + 1);
+			_dummyInhabitant.firstName = PickFirstName(ref _dummyInhabitant);
+			_dummyInhabitant.lastName = PickLastName(ref _dummyInhabitant);
 
 			//family data
 			_dummyInhabitant.id = (uint)i;
 			_dummyInhabitant.motherID = null;
 			_dummyInhabitant.fatherID = null;
 
-			_dummyInhabitants[i] = _dummyInhabitant;
+			_dummyInhabitants.Add(_dummyInhabitant);
 		}
 
 		return _dummyInhabitants;
 	} 
 	public TraitName PickTrait1()
 	{
-		TraitName traitName = (TraitName)Random.Shared.Next(0,TraitDatabase.Definitions.Count);
-		TraitDefinition trait = TraitDatabase.Definitions[traitName];
 
 		var possibleTraits = TraitDatabase.Definitions
 			.Where(pair => !pair.Value.isFlaw)
@@ -76,6 +171,12 @@ public partial class Inhabitants : Node
 			.ToList();
 
 		return possibleTraits[Random.Shared.Next(possibleTraits.Count)];
+	}
+	public TraitName PickTrait1(InhabitantData mother, InhabitantData father)
+	{
+		List<TraitName> parentTraits = [mother.trait1, mother.trait2, father.trait1, father.trait2];
+
+		return parentTraits[Random.Shared.Next(parentTraits.Count)];
 	}
 	public TraitName PickTrait2(TraitName trait1)
 	{
@@ -92,6 +193,7 @@ public partial class Inhabitants : Node
 		return possibleTraits[Random.Shared.Next(possibleTraits.Count)];
 		
 	}
+
 	public TraitName PickFlaw(TraitName trait1, TraitName trait2)
 	{
 		var exclusiveList = TraitDatabase.Definitions[trait1].exclusiveWith ?? System.Array.Empty<byte>()
@@ -139,21 +241,65 @@ public partial class Inhabitants : Node
 		inhabitant.charisma = stats[5];
 		
 	}
-	public void PickStat(InhabitantData inhabitant, byte motherID, byte fatherID)
+	public void PickStat(ref InhabitantData inhabitant, byte motherID, byte fatherID)
 	{
 	}
+	public Name PickFirstName(ref InhabitantData inhabitant)
+	{
+		//2 accesss the neuter name dictionary
+		int speciesByte = (int)inhabitant.species;
+		int genderByte = (int)inhabitant.gender;
+
+		var genderedNames = NameDatabase.Definitions[speciesByte][genderByte].Keys.ToList();
+		var neuterNames = NameDatabase.Definitions[speciesByte][2].Keys.ToList();
+
+		var possibleNames = Random.Shared.Next(10) == 1 ? neuterNames : genderedNames;
+
+		possibleNames.AddRange(NameDatabase.Definitions[speciesByte][2].Select(pair => pair.Key).ToList());
+
+		return possibleNames[Random.Shared.Next(possibleNames.Count())];
+
+	}
+	public Name PickLastName(ref InhabitantData inhabitant)
+	{
+		//3 accesses the last names dictionary
+		int speciesByte = (int)inhabitant.species;
+
+		var possibleNames = NameDatabase.Definitions[speciesByte][3].Select(pair => pair.Key).ToList();
 
 
+		return possibleNames[Random.Shared.Next(possibleNames.Count())];
+
+	}
 	public string GetDisplayString()
 	{
 		//Displays the population in a human readable format
 
+
 		StringBuilder stringBuilder = new StringBuilder("Population: \n\n");
 		foreach (var inhabitant in Population)
 		{
-			stringBuilder.Append($"{inhabitant.gender}\n{inhabitant.trait1}\n{inhabitant.trait2}\n{inhabitant.flaw}\n{inhabitant.ideal}\nSTR:{inhabitant.strength}\nDEX:{inhabitant.dexterity}\nCON:{inhabitant.constitution}\nINT:{inhabitant.intelligence}\nWIS:{inhabitant.wisdom}\nCHA:{inhabitant.charisma}\nAGE:{inhabitant.age}\nBD:{inhabitant.birthYear}\n{inhabitant.job}\n{inhabitant.firstName}\n{inhabitant.lastName}\n{inhabitant.id}\nMother:{inhabitant.motherID}\nFather:{inhabitant.fatherID}\n\n");
+			stringBuilder.Append(GetSingleDisplayString(inhabitant));
+
 		}
 		return stringBuilder.ToString();
+	}
+	public string GetSingleDisplayString(InhabitantData inhabitant)
+	{
+		var traitDict = TraitDatabase.Definitions;
+		var idealDict = IdealDatabase.Definitions;
+			var nameDefinitions = NameDatabase.Definitions[(int)inhabitant.species];
+
+			var firstNameDefinition = nameDefinitions[(int)inhabitant.gender]
+					.TryGetValue(inhabitant.firstName, out var firstName)
+						? firstName
+						: nameDefinitions[2][inhabitant.firstName];
+
+			var lastNameDefinition = nameDefinitions[3][inhabitant.lastName];
+			
+
+			return $"{inhabitant.gender}\n{traitDict[inhabitant.trait1].DisplayName}\n{traitDict[inhabitant.trait2].DisplayName}\n{traitDict[inhabitant.flaw].DisplayName}\n{idealDict[inhabitant.ideal].displayName}\nSTR:{inhabitant.strength}\nDEX:{inhabitant.dexterity}\nCON:{inhabitant.constitution}\nINT:{inhabitant.intelligence}\nWIS:{inhabitant.wisdom}\nCHA:{inhabitant.charisma}\nAGE:{inhabitant.age}\nBD:{inhabitant.birthYear}\n{inhabitant.job}\n{firstNameDefinition._displayName}\n{lastNameDefinition._displayName}\n{inhabitant.id}\nMother:{inhabitant.motherID}\nFather:{inhabitant.fatherID}\n\n";
+
 	}
 	public string GetByteString()
 	{
@@ -161,7 +307,7 @@ public partial class Inhabitants : Node
 		StringBuilder stringBuilder = new StringBuilder("Population:\n");
 		foreach (var inhabitant in Population)
 		{
-			stringBuilder.Append($"{(byte)inhabitant.gender}{(byte)inhabitant.trait1}{(byte)inhabitant.trait2}{(byte)inhabitant.flaw}{(byte)inhabitant.ideal}{inhabitant.strength}{inhabitant.dexterity}{inhabitant.constitution}{inhabitant.intelligence}{inhabitant.wisdom}{inhabitant.charisma}{inhabitant.age}{inhabitant.birthYear}{(byte)inhabitant.job}{inhabitant.firstName}{inhabitant.lastName}{inhabitant.id}{inhabitant.motherID}{inhabitant.fatherID}\n");
+			stringBuilder.Append($"{(byte)inhabitant.gender}{(byte)inhabitant.trait1}{(byte)inhabitant.trait2}{(byte)inhabitant.flaw}{(byte)inhabitant.ideal}{inhabitant.strength}{inhabitant.dexterity}{inhabitant.constitution}{inhabitant.intelligence}{inhabitant.wisdom}{inhabitant.charisma}{inhabitant.age}{inhabitant.birthYear}{(byte)inhabitant.job}{(ushort)inhabitant.firstName}{(ushort)inhabitant.lastName}{inhabitant.id}{inhabitant.motherID}{inhabitant.fatherID}\n");
 		}
 		return stringBuilder.ToString();
 	}
