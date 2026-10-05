@@ -1,4 +1,13 @@
 public enum Species : byte
 {
-    Human
+    Human,
+    Dwarf,
+    Elf,
+    Goblin,
+    Kobold,
+    Halfling,
+    Foxfolk,
+    Wolffolk,
+    Catfolk
+
 }
