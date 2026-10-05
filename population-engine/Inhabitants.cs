@@ -13,7 +13,8 @@ using Godot.Collections;
 
 public partial class Inhabitants : Node
 {
-	public InhabitantData[] Population { get; private set;} = [];
+	public List<InhabitantData> Population { get; private set;} = new();
+	private int _lastProcesssedTick = -1; //FIXME: this should be double checked
 
 	public override void _Ready()
 	{
@@ -21,7 +22,17 @@ public partial class Inhabitants : Node
 
 		// Population = new InhabitantData[WorldState.Instance.startingPopulation];
 		Population = GenerateRandomInhabitants(WorldState.Instance.StartingPopulation);
-		Debug();
+		
+	}
+	public override void _Process(double delta)
+	{
+		int currentTick = Clock.Instance.TickCount;
+		if (currentTick % 12 == 0 && _lastProcesssedTick != currentTick)
+		{
+			_lastProcesssedTick = currentTick;
+			NewGeneration();
+			Debug(); 
+		}
 	}
 	public override void _UnhandledInput(InputEvent @event)
 	{
@@ -29,13 +40,96 @@ public partial class Inhabitants : Node
 	}
 	public void Debug()
 	{
-		GD.Print(GetSingleDisplayString(Population[0]));
+		GD.Print("population count:",Population.Count);
+		GD.Print(GetSingleDisplayString(Population[Population.Count - 1]));
+	}
+	public void NewGeneration()
+	{
+		AgeUp();
+		CheckEligibleInhabitants();
+	}
+	public void AgeUp()
+	{
+		for (int i = Population.Count - 1; i >= 0; i--)
+		{
+			var inhabitant = Population[i];
+			inhabitant.age++;
+			if (inhabitant.age >= 80)
+			{
+				Population.RemoveAt(i);
+			}
+			else
+			{
+				Population[i] = inhabitant;
+			}
+		}
+	}
+	public void CheckEligibleInhabitants()
+	{
+		Stack<InhabitantData> bachelors = new();
+		Stack<InhabitantData> bachelorettes = new();
+
+		for(int i = Population.Count - 1; i >= 0; i--)
+		{
+			if (Population[i].age < 50 && Population[i].age >= 18)
+			{
+				
+				if (Population[i].gender == Gender.Female && bachelors.Count == 0) // Pop[i] is a woman and no bachelors have been found
+				{
+				
+					bachelorettes.Push(Population[i]);
+				} else if (Population[i].gender == Gender.Male && bachelorettes.Count == 0) // Pop[i] is a man and no bachlorettes have been found
+				{
+					bachelors.Push(Population[i]);
+				}else  if (Population[i].gender == Gender.Female && bachelors.Count > 0) // Pop[i] is a woman and there are bachelors in the stack
+				{
+					GenerateChild(Population[i], bachelors.Pop());
+				} else if (Population[i].gender == Gender.Male && bachelorettes.Count > 0) // Pop[i] is a man and there are bachlorettes in the stack
+				{
+					GenerateChild(bachelorettes.Pop(), Population[i]);
+				}
+				else
+				{
+					//No eligibles found
+				}
+			}
+		}
 	}
 
-	public InhabitantData[] GenerateRandomInhabitants(uint quantity)
+	public void GenerateChild(InhabitantData mother, InhabitantData father)
 	{
 
-		InhabitantData[] _dummyInhabitants = new InhabitantData[quantity];
+		InhabitantData _dummyInhabitant = new InhabitantData();
+
+		//genetic
+		_dummyInhabitant.gender = (Gender)Random.Shared.Next(2);
+		_dummyInhabitant.trait1 = PickTrait1(mother, father);
+		_dummyInhabitant.trait2 = PickTrait2(_dummyInhabitant.trait1);
+		_dummyInhabitant.flaw = PickFlaw(_dummyInhabitant.trait1, _dummyInhabitant.trait2);
+		_dummyInhabitant.ideal = PickIdeal();
+
+		//sets str, dex, con, int, wis, cha
+		PickStat(ref _dummyInhabitant);
+
+		_dummyInhabitant.age = 0;
+		_dummyInhabitant.birthYear = WorldState.Instance.CurrentYear;
+		_dummyInhabitant.firstName = PickFirstName(ref _dummyInhabitant);
+		_dummyInhabitant.lastName = father.lastName;
+
+		//family data
+		_dummyInhabitant.id = (uint)(Population.Count + 1);
+		_dummyInhabitant.motherID = mother.id;
+		_dummyInhabitant.fatherID = father.id;
+
+
+		Population.Add(_dummyInhabitant);
+		GD.Print("pop id: ",_dummyInhabitant.id);
+	}
+
+	public List<InhabitantData> GenerateRandomInhabitants(uint quantity)
+	{
+
+		List<InhabitantData> _dummyInhabitants = new ();
 
 		for (int i = 0; i < quantity; i++)
 		{
@@ -43,7 +137,7 @@ public partial class Inhabitants : Node
 			InhabitantData _dummyInhabitant = new InhabitantData();
 
 			//genetic
-			_dummyInhabitant.gender = (Gender)random.Next(0,2);
+			_dummyInhabitant.gender = (Gender)random.Next(2);
 			_dummyInhabitant.trait1 = PickTrait1();
 			_dummyInhabitant.trait2 = PickTrait2(_dummyInhabitant.trait1);
 			_dummyInhabitant.flaw = PickFlaw(_dummyInhabitant.trait1, _dummyInhabitant.trait2);
@@ -64,15 +158,13 @@ public partial class Inhabitants : Node
 			_dummyInhabitant.motherID = null;
 			_dummyInhabitant.fatherID = null;
 
-			_dummyInhabitants[i] = _dummyInhabitant;
+			_dummyInhabitants.Add(_dummyInhabitant);
 		}
 
 		return _dummyInhabitants;
 	} 
 	public TraitName PickTrait1()
 	{
-		TraitName traitName = (TraitName)Random.Shared.Next(0,TraitDatabase.Definitions.Count);
-		TraitDefinition trait = TraitDatabase.Definitions[traitName];
 
 		var possibleTraits = TraitDatabase.Definitions
 			.Where(pair => !pair.Value.isFlaw)
@@ -80,6 +172,12 @@ public partial class Inhabitants : Node
 			.ToList();
 
 		return possibleTraits[Random.Shared.Next(possibleTraits.Count)];
+	}
+	public TraitName PickTrait1(InhabitantData mother, InhabitantData father)
+	{
+		List<TraitName> parentTraits = [mother.trait1, mother.trait2, father.trait1, father.trait2];
+
+		return parentTraits[Random.Shared.Next(parentTraits.Count)];
 	}
 	public TraitName PickTrait2(TraitName trait1)
 	{
@@ -96,6 +194,7 @@ public partial class Inhabitants : Node
 		return possibleTraits[Random.Shared.Next(possibleTraits.Count)];
 		
 	}
+
 	public TraitName PickFlaw(TraitName trait1, TraitName trait2)
 	{
 		var exclusiveList = TraitDatabase.Definitions[trait1].exclusiveWith ?? System.Array.Empty<byte>()
@@ -152,7 +251,10 @@ public partial class Inhabitants : Node
 		int speciesByte = (int)inhabitant.species;
 		int genderByte = (int)inhabitant.gender;
 
-		var possibleNames = NameDatabase.Definitions[speciesByte][genderByte].Select(pair => pair.Key).ToList();
+		var genderedNames = NameDatabase.Definitions[speciesByte][genderByte].Keys.ToList();
+		var neuterNames = NameDatabase.Definitions[speciesByte][2].Keys.ToList();
+
+		var possibleNames = Random.Shared.Next(10) == 1 ? neuterNames : genderedNames;
 
 		possibleNames.AddRange(NameDatabase.Definitions[speciesByte][2].Select(pair => pair.Key).ToList());
 
