@@ -31,7 +31,6 @@ public partial class Inhabitants : Node
 		{
 			_lastProcesssedTick = currentTick;
 			NewGeneration();
-			Debug(); 
 		}
 	}
 	public override void _UnhandledInput(InputEvent @event)
