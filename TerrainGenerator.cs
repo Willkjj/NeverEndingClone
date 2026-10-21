@@ -134,7 +134,7 @@ public partial class TerrainGenerator : Godot.TileMapLayer
         Random rnd = new Random();
         if (isWater)
         {
-            return new TileResources { Wood = 0, Stone = 0 };
+            return new TileResources { Wood = 0, Stone = 0, FreshWater = 10000 };
         }
         if (isMountain)
         {

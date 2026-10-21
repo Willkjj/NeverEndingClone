@@ -44,7 +44,7 @@ public partial class TileInfoSidebar : CanvasLayer
         var biomeDisplay = tile.IsMountain
             ? "Mountain"
             : (tile.IsWater ? "Water" : BiomeDatabase.Definitions[tile.Biome].DisplayName);
-        var resourceDisplay = $"Wood: {tile.Resources.Wood} \n Stone: {tile.Resources.Stone}";
+        var resourceDisplay = $"Wood: {tile.Resources.Wood} \n Stone: {tile.Resources.Stone} \n Fresh Water: {tile.Resources.FreshWater}";
         _coordsDisplay.Text = $"Selected Tile: {tile.Coords.X}, {tile.Coords.Y}";
         _biomeDisplay.Text = $"Biome: {biomeDisplay}";
         _resourceDisplay.Text = $"Resources {resourceDisplay}";
