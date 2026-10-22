@@ -3,6 +3,7 @@ using System.Collections.Generic;
 public struct InhabitantData
 {
 	//genetic data
+	public Species species;
 	public Gender gender;
 	public TraitName trait1;
 	public TraitName trait2;
@@ -18,11 +19,11 @@ public struct InhabitantData
 	public ushort birthYear;
 	public byte age;
 	public Job job;
-	public byte firstName;
-	public byte lastName;
+	public Name firstName;
+	public Name lastName;
 
-    //family data
-    public uint id;
-    public uint? motherID;
-    public uint? fatherID;
+	//family data
+	public uint id;
+	public uint? motherID;
+	public uint? fatherID;
 }
